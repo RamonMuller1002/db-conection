@@ -13,20 +13,29 @@ async function dbConection(query) {
 
 
         //executar o script simples de criacao de tabela
+        await db.exec(`CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            descricao TEXT,
+            responsavel FOREING KEY REFERENCES usuarios(id)
+            )`)
+        await db.exec(`PRAGMA foreign_keys = ON;`)
         await db.exec(`CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE)`)
+            email TEXT NOT NULL,
+            idade NUMBER
+            )`)
 
-/*
-
-
-        //await db.run(`INSERT INTO usuarios(nome, email) VALUES (? , ?)`, ["Ramon", "ramonmuller1010@gmail.com"])
-            const usuarios = await db.all(`SELECT * FROM usuarios`)
-            console.log(usuarios)
-
-
-        await db.close()*/
+        /*
+        
+        
+                //await db.run(`INSERT INTO usuarios(nome, email) VALUES (? , ?)`, ["Ramon", "ramonmuller1010@gmail.com"])
+                    const usuarios = await db.all(`SELECT * FROM usuarios`)
+                    console.log(usuarios)
+        
+        
+                await db.close()*/
         return db
     } catch (err) {
         console.log(err)
