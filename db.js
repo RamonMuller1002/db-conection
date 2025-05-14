@@ -37,7 +37,3 @@ module.exports = { dbConection }
 //executar o scrpit de add users
 //executar o script simples de leitura da tabela
 //encerrar conexao
-
-
-
-
