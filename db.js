@@ -1,48 +1,46 @@
 const sqlite = require('sqlite3')
 const { open } = require('sqlite')
-
+let db = null
 
 //criar uma conexao com o db
 async function dbConection(query) {
     try {
-        const db = await open({
+        db = await open({
             filename: './banco.db',
             driver: sqlite.Database
         })
-
-
-
-        //executar o script simples de criacao de tabela
-        await db.exec(`CREATE TABLE IF NOT EXISTS tarefas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            descricao TEXT,
-            responsavel FOREING KEY REFERENCES usuarios(id)
-            )`)
-        await db.exec(`PRAGMA foreign_keys = ON;`)
-        await db.exec(`CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            email TEXT NOT NULL,
-            idade NUMBER
-            )`)
-
-        /*
-        
-        
-                //await db.run(`INSERT INTO usuarios(nome, email) VALUES (? , ?)`, ["Ramon", "ramonmuller1010@gmail.com"])
-                    const usuarios = await db.all(`SELECT * FROM usuarios`)
-                    console.log(usuarios)
-        
-        
-                await db.close()*/
+        setup(db);
         return db
     } catch (err) {
         console.log(err)
     }
 }
-module.exports = { dbConection }
 
-//executar o scrpit de add users
-//executar o script simples de leitura da tabela
-//encerrar conexao
+async function setup(db) {
+
+    //executar o script simples de criacao de tabela
+    await db.exec(`PRAGMA foreign_keys = ON;`)
+    await db.exec(`CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            email TEXT NOT NULL,
+            idade NUMBER
+            )`)
+    await db.exec(`CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            descricao TEXT,
+            responsavel INTEGER, 
+            FOREIGN KEY (responsavel) REFERENCES usuarios(id)
+            )`)
+}
+
+async function criar(query, valores) {
+    return db.run(query, valores)
+}
+
+async function ler(query) {
+    return db.all(query)
+}
+
+module.exports = { dbConection, criar, ler }
